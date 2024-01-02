@@ -1,5 +1,5 @@
 import { SIZE } from './index.ts';
-import { Point } from './point.ts';
+import { Neighbor, Point } from './point.ts';
 import { Position } from './position.ts';
 
 export class Field {
@@ -27,10 +27,11 @@ export class Field {
     this.rows = rows;
   };
 
-  print = (name: string = '') => {
+  print = (name = '') => {
     const result = this.rows
       .map((row) => row.map((item) => item.print()).join(' '))
       .join(this.NEW_LINE);
+
     console.log(name + this.NEW_LINE + result + this.NEW_LINE);
   };
 
@@ -47,8 +48,21 @@ export class Field {
     }
   };
 
+  getPoint = ({ x, y }: Neighbor) => this.rows[x][y];
+
   updatePoints = () => {
-    // this.goThroughAll(point => point.toString());
-    // this.goThroughAll((point) => point.getWeigth());
+    console.log('update');
+
+    this.goThroughAll((point) => {
+      const neighbors = point.getNeighbors();
+
+      const weight = neighbors
+        .map((position) => this.getPoint(position))
+        .filter((point) => point.isFilled);
+
+      const extraWeight = point.isFilled ? 1 : 0;
+
+      point.weight = weight.length + extraWeight;
+    });
   };
 }
